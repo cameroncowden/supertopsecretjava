@@ -1,0 +1,67 @@
+/* package whatever; // don't place package name! */
+
+import java.util.*;
+import java.lang.*;
+import java.io.*;
+import java.net.Socket;
+
+/* Name of the class has to be "Main" only if the class is public. */
+class Ideone
+{
+	public static void main (String[] args) throws IOException
+	{
+		System.out.println("Welcome to the adding machine! Enter 'exit' at any time to end program.")
+		//Declaring scanner
+		Scanner userinput = new Scanner(System.in);
+	
+		//Configuration
+		string ipaddress;
+		string port;
+		System.out.println("Please enter IP address of server.");
+		ipaddress = userinput.nextLine();
+		System.out.println("Please enter port of server.");
+		port = userinput.nextLine();
+		System.out.println("Attempting connection to server.");
+		try{
+			Socket connection = new Socket(ipaddress,port);
+			System.out.println("Socket created ...");
+			DataOutputStream sender = new DataOutputStream(connection.getOutputStream());
+			DataInputStream receiver = new DataInputStream(connection.getInputStream());
+			System.out.println("IO Streams established ...");
+		}
+		catch (IOException e){
+                        System.err.println("Failed to reach server.");
+                        System.exit(1);
+                }
+
+		
+		//Declaring client loop for continuous operation
+		
+		while (userinput != "exit"){
+			System.out.println("Welcome to the adding quiz!");
+			System.out.println("Here is your question:");
+			Random R = new Random(); //Creating random number generator.
+            int a = R.nextInt(101); //Finding first random number between 0 and 100.
+            int b = R.nextInt(101); //Finding second random number between 0 and 100.
+            System.out.println("What is the sum of " + a + " and " + b + "?");
+			int UserAnswer = userinput.nextInt();
+			System.out.println("Asking the server for the correct answer...");
+			//send a and b to server
+			sender.writeInt(a); //Send first int to the server.
+            sender.writeInt(b); //Send second int to the server.
+			//listen for response
+			int correctanswer = receiver.readInt();             
+            System.out.println("Correct answer received from the server!");
+            //checking if user was correct
+			if (UserAnswer == correctanswer)
+                                System.out.println("You got it correct!");
+                        else
+                                System.out.println("Unfortunately you're wrong!");
+
+		}
+		userinput.close(); //Tidying things up
+		connection.close(); //Close the connection.
+        System.exit(0);
+
+	}
+}
